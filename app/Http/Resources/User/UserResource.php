@@ -15,22 +15,13 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        $avatar = null;
-        if ( $this->avatar) {
-
-            if (File::exists( public_path( $this->avatar ) ))
-                $avatar = url($this->avatar);
-            else
-                $avatar = url('uploads/user/'.$this->avatar);
-        }
-
         return [
             "id" => $this->id,
             "name" => $this->name,
             "email" => $this->email,
             "email_verified_at" => $this->email_verified_at,
             "gender" => $this->gender? $this->gender : null,
-            "avatar" => $avatar,
+            "avatar" => image_path($this->avatar),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
         ];

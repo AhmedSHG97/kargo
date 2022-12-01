@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Models\ShipmentType;
+use App\Models\OtherService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Helpers\ApiResponse;
-use App\Http\Resources\ShipmentTypeResource;
-use Exception;
 use Illuminate\Support\Facades\Validator;
 
-class ShipmentTypeController extends Controller
+class OtherServiceController extends Controller
 {
 
-    public function __construct( ApiResponse $apiResponse, ShipmentType $shipmentTypeModel )
+    public function __construct( ApiResponse $apiResponse, OtherService $otherServiceModel )
     {
         $this->apiResponse = $apiResponse;
-        $this->shipmentTypeModel = $shipmentTypeModel;
+        $this->otherServiceModel = $otherServiceModel;
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -29,7 +29,8 @@ class ShipmentTypeController extends Controller
         if(Auth::user()->role != "admin"){
             return $this->apiResponse->setError("You are not authorized")->setData()->getJsonResponse(401);
         }
-        return $this->apiResponse->setSuccess("Type has been retrived successfully")->setData($this->shipmentTypeModel->all())->getJsonResponse();
+        return $this->apiResponse->setSuccess("services has been retrived successfully")->setData($this->otherServiceModel->all())->getJsonResponse();
+
     }
 
     /**
@@ -45,15 +46,16 @@ class ShipmentTypeController extends Controller
         }
         $roles = [
             "name" => "required|string|min:1", 
-            "status" => "nullable|in:0,1", 
+            "price" => "required|numeric|min:0", 
+            "description" => "string|min:2", 
         ];
         $validation = Validator::make($request->all(),$roles);
         if($validation->errors()->first()){
             return $this->apiResponse->setError($validation->errors()->first())->setData()->getJsonResponse();
         }
         try{
-            $type = $this->shipmentTypeModel->create($request->all());
-            return $this->apiResponse->setSuccess("type has been added successfully")->setData(new ShipmentTypeResource($type))->getJsonResponse();
+            $otherService = $this->otherServiceModel->create($request->all());
+            return $this->apiResponse->setSuccess("service has been added successfully")->setData($otherService)->getJsonResponse();
         }catch(Exception $exception){
             return $this->apiResponse->setError($exception->getMessage())->setData()->getJsonResponse();
         }
@@ -62,15 +64,15 @@ class ShipmentTypeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ShipmentType  $shipmentType
+     * @param  \App\Models\OtherService  $service
      * @return \Illuminate\Http\Response
      */
-    public function show(ShipmentType $shipment)
+    public function show(OtherService $service)
     {
         if(Auth::user()->role != "admin"){
             return $this->apiResponse->setError("You are not authorized")->setData()->getJsonResponse(401);
         }
-        return $this->apiResponse->setSuccess("data has been retreived successfully")->setData(new ShipmentTypeResource($shipment))->getJsonResponse();
+        return $this->apiResponse->setSuccess("data has been retreived successfully")->setData($service)->getJsonResponse();
 
     }
 
@@ -78,26 +80,27 @@ class ShipmentTypeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ShipmentType  $shipmentType
+     * @param  \App\Models\OtherService  $service
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ShipmentType $shipment)
+    public function update(Request $request, OtherService $service)
     {
         if(Auth::user()->role != "admin"){
             return $this->apiResponse->setError("You are not authorized")->setData()->getJsonResponse(401);
         }
         $roles = [
-            "name" => "nullable|string|min:1", 
-            "status" => "nullable|in:0,1", 
+            "name" => "required|string|min:1", 
+            "description" => "required|min:2", 
+            "price" => "required|numeric|min:0", 
         ];
         $validation = Validator::make($request->all(),$roles);
         if($validation->errors()->first()){
             return $this->apiResponse->setError($validation->errors()->first())->setData()->getJsonResponse();
         }
         try{
-            $shipment->update($request->all());
-            $shipment->refresh();
-            return $this->apiResponse->setSuccess("type has been updated successfully")->setData(new ShipmentTypeResource($shipment))->getJsonResponse();
+            $service->update($request->all());
+            $service->refresh();
+            return $this->apiResponse->setSuccess("service has been updated successfully")->setData($service)->getJsonResponse();
         }catch(Exception $exception){
             return $this->apiResponse->setError($exception->getMessage())->setData()->getJsonResponse();
         }
@@ -106,17 +109,17 @@ class ShipmentTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ShipmentType  $shipmentType
+     * @param  \App\Models\OtherService  $service
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ShipmentType $shipment)
+    public function destroy(OtherService $service)
     {
         if(Auth::user()->role != "admin"){
             return $this->apiResponse->setError("You are not authorized")->setData()->getJsonResponse(401);
         }
         try{
-            $shipment->delete();
-            return $this->apiResponse->setSuccess("type has been deleted successfully")->setData(new ShipmentTypeResource($shipment))->getJsonResponse();
+            $service->delete();
+            return $this->apiResponse->setSuccess("Service has been deleted successfully")->setData($service)->getJsonResponse();
         }catch(Exception $exception){
             return $this->apiResponse->setError($exception->getMessage())->setData()->getJsonResponse();
         }

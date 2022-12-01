@@ -32,8 +32,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function uploadAvatar($file){
         $fileName = time() . uniqid() . "_" . strlen((string)auth()->id()) . "." . $file->getClientOriginalExtension();
-        $file_path = Storage::disk("local")->putFileAs("users/avatar/", $file, $fileName);
-        return "uploads/".$file_path;
+        $file_path = Storage::disk("public")->putFileAs("uploads/users/avatar/", $file, $fileName);
+        return $file_path;
     }
 
 

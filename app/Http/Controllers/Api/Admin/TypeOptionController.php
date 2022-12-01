@@ -28,7 +28,7 @@ class TypeOptionController extends Controller
         if(Auth::user()->role != "admin"){
             return $this->apiResponse->setError("You are not authorized")->setData()->getJsonResponse(401);
         }
-        return $this->apiResponse->setSuccess("Option has been retrived successfully")->setData(OptionResource::collection($this->optionModel->all()))->getJsonResponse();
+        return $this->apiResponse->setSuccess("Option has been retrived successfully")->setData(OptionResource::collection($this->optionModel->with("type")->get()))->getJsonResponse();
     }
 
     /**

@@ -9,6 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Http\Requests\UserAuthenticationRequest;
+use App\Http\Resources\ShipmentTypeResource;
+use App\Models\AdditionalService;
+use App\Models\Advertisement;
+use App\Models\DeliveryService;
+use App\Models\OtherService;
+use App\Models\ShipmentType;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -52,4 +58,36 @@ class UserController extends Controller
             return $this->apiResponse->setError($exception->getMessage())->setData()->getJsonResponse();
         }
     }
+
+    public function getAdds(){
+        return $this->apiResponse->setSuccess("Data retrived successfully")->setData(Advertisement::all())->getJsonResponse();
+    }
+    public function getShippmentTypes(){
+        return $this->apiResponse->setSuccess("Data retrived successfully")->setData(ShipmentTypeResource::collection(ShipmentType::has("options")->get()))->getJsonResponse();
+    }
+    
+    public function getAdditionalServices(){
+        return $this->apiResponse->setSuccess("Data retrived successfully")->setData(AdditionalService::all())->getJsonResponse();
+    }
+
+    public function getDeliveryServices(){
+        return $this->apiResponse->setSuccess("Data retrived successfully")->setData(DeliveryService::all())->getJsonResponse();
+    }
+
+    public function getOtherServices(){
+        return $this->apiResponse->setSuccess("Data retrived successfully")->setData(OtherService::all())->getJsonResponse();
+    }
+
+    public function getCountries(){
+        return DB::table("countries")->orderBy("name", "ASC")->get();
+    }
+    
+    public function getStates($country_id){
+        return DB::table("states")->where("country_id", $country_id)->orderBy("name", "ASC")->get();
+    }
+    
+    public function getCounties($state_id){
+        return DB::table("counties")->where("state_id", $state_id)->orderBy("name", "ASC")->get();
+    }
+
 }
